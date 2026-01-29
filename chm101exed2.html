@@ -1,0 +1,357 @@
+
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CHM 101 25/26 pq Interactive Quiz</title>
+  <style>
+    :root{--bg:#0f172a;--card:#111827;--accent:#06b6d4;--muted:#94a3b8;--white:#e6eef6}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:linear-gradient(180deg,#071022 0%, #071a2a 100%);color:var(--white);-webkit-font-smoothing:antialiased}
+    .wrap{max-width:920px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;gap:16px}
+    h1{margin:0;font-size:20px}
+    .meta{color:var(--muted);font-size:13px}
+    .card{background:rgba(255,255,255,0.03);padding:20px;border-radius:12px;margin-top:18px;box-shadow:0 6px 24px rgba(2,6,23,0.6)}
+    .question{font-size:18px;margin-bottom:12px}
+    .choices{display:flex;flex-direction:column;gap:8px}
+    .choice{background:#072031;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+    .choice:hover{transform:translateY(-2px)}
+    .choice.selected{outline:3px solid rgba(6,182,212,0.12);background:#2babff}
+    .controls{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+    button{background:var(--accent);color:#042029;border:0;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+    button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white)}
+    .progress{height:10px;background:rgba(255,255,255,0.04);border-radius:999px;overflow:hidden}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#60a5fa);width:0%}
+    .footer{margin-top:16px;color:var(--muted);font-size:13px}
+    .result{padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(2,6,23,0.85), rgba(2,6,23,0.6));}
+    .review{margin-top:12px}
+    .q-review{background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;margin-bottom:10px}
+    @media(max-width:560px){.wrap{padding:12px}h1{font-size:18px}.question{font-size:16px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>CHM 101 25/26 pq  Interactive MCQ Quiz PRT 3</h1>
+        <div class="meta">30 multiple-choice questions </div>
+      </div>
+    </header><div class="card" id="quiz-card">
+  <div class="progress" aria-hidden><i id="progress-bar"></i></div>
+  <div style="height:14px"></div>
+  <div id="q-area">
+    </div>
+
+  <div class="controls">
+    <div style="display:flex;gap:8px">
+      <button id="prevBtn" class="secondary">Previous</button>
+      <button id="nextBtn">Next</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button id="submitBtn" class="secondary">Submit</button>
+      <div style="color:var(--muted);font-size:13px">Q <span id="q-num">1</span> / <span id="q-total">10</span></div>
+    </div>
+  </div>
+
+  <div class="footer">Tip: Select an answer and press Next. You can review answers after submission.</div>
+</div>
+
+<div id="result-area" style="display:none" class="card">
+  <div class="result">
+    <h2 id="score-title"></h2>
+    <p id="score-summary" class="meta"></p>
+  </div>
+  <div class="review" id="review-list"></div>
+  <div style="display:flex;gap:8px;margin-top:12px">
+    <button id="retryBtn">Retake Quiz</button>
+    <button id="exportBtn" class="secondary">Export Results</button>
+  </div>
+</div>
+<br><br><br>
+  <a href="https://wa.me/+2349036795652"><button>Contact The Developer</button></a>
+    <a href="https://wa.me/+2349036795652"><button>Support Project</button></a><br><br>
+   <button onclick="shareOnWhatsApp()">Share Quiz link via WhatsApp</button>
+  <h2>Designed by Readone</h2>
+  </div>
+   <script>
+      
+      
+
+const QUESTIONS = [
+  {
+    q: "According to the ground state of an atom, what state does it correspond to?",
+    c: ["Maximum energy", "Minimum energy", "Stable energy", "Excited energy"],
+    a: 1,
+  },
+  {
+    q: "The two electrons in the first shell of an atom differ in which quantum value?",
+    c: ["Principal (n)", "Azimuthal (l)", "Magnetic (m)", "Spin (s)"],
+    a: 3,
+  },
+  {
+    q: "Which of the following is considered the strongest acid among the hydrohalic acids?",
+    c: ["HF", "HCl", "HBr", "HI"],
+    a: 3,
+  },
+  {
+    q: "What is the steric number of a central atom that has 3 bonded atoms and 2 lone pairs?",
+    c: ["3", "4", "5", "6"],
+    a: 2,
+  },
+  {
+    q: "What is the molecular geometry of Phosphorus Pentafluoride (PF5)?",
+    c: ["Trigonal pyramidal", "Octahedral", "Trigonal planar", "Trigonal bipyramidal"],
+    a: 3,
+  },
+  {
+    q: "Atoms of the same isotopes possess which of the following?",
+    c: ["Different neutrons", "Same neutrons", "Different protons", "Same mass"],
+    a: 0,
+  },
+  {
+    q: "In the balanced equation: Cr2(SO4)3 + 6RbOH -> 2Cr(OH)3 + 3Rb2SO4, what is the sum of the coefficients?",
+    c: ["10", "12", "14", "8"],
+    a: 1,
+  },
+  {
+    q: "Calculate the energy required to evaporate 2 moles of water given the following: 2H2 + O2 -> 2H2O (l) ΔH = -571.6 kJ and 2H2 + O2 -> 2H2O (g) ΔH = -483.6 kJ.",
+    c: ["44.0 kJ", "88.0 kJ", "1055.2 kJ", "483.6 kJ"],
+    a: 1,
+  },
+  {
+    q: "Which of the following is the correct expression for Molar Heat Capacity (C)?",
+    c: ["C = q * T / n", "C = q * n / T", "C = q / (n * ΔT)", "C = q * n * T"],
+    a: 2,
+  },
+  {
+    q: "A spontaneous electrochemical cell is a/an:",
+    c: ["Galvanic cell", "Electrolytic cell", "Daniel cell", "Both A and C"],
+    a: 3,
+  },
+  {
+    q: "What is the rate equation for a zero-order reaction 2A + B -> C?",
+    c: ["Rate = k[A]^2", "Rate = k[A][B]", "Rate = k[A]^0", "Rate = k[A]"],
+    a: 2,
+  },
+  {
+    q: "Which statement is correct for zero-order reactions?",
+    c: ["Rate is independent of time", "Reactants do not react", "One reactant is in excess", "Concentration decreases linearly with time"],
+    a: 3,
+  },
+  {
+    q: "How many sigma bonds are present in a water (H2O) molecule?",
+    c: ["1", "2", "0", "3"],
+    a: 1,
+  },
+  {
+    q: "The unit for a zero-order reaction rate constant is:",
+    c: ["mol L⁻¹ s⁻¹", "L mol⁻¹ s⁻¹", "s⁻¹", "mol⁻¹ L s⁻¹"],
+    a: 0,
+  },
+  {
+    q: "Which of the following is a half-cell reaction?",
+    c: ["Ag+ + Cl- -> AgCl", "H+ + OH- -> H2O", "Ag+ + e- -> Ag", "Zn + Cu2+ -> Zn2+ + Cu"],
+    a: 2,
+  },
+  {
+    q: "Which of the following is NOT amphiprotic?",
+    c: ["OH-", "HCO3-", "HPO4^2-", "H2O"],
+    a: 0,
+  },
+  {
+    q: "Which of the following substances will turn phenolphthalein pink?",
+    c: ["KOH", "H2SO4", "H3PO4", "HCl"],
+    a: 0,
+  },
+  {
+    q: "How many sigma bonds are in an ethyne (acetylene) molecule?",
+    c: ["1", "2", "3", "5"],
+    a: 2,
+  },
+  {
+    q: "What is the order of diffusion from slowest to fastest for: H2, O2, CO2, NH3?",
+    c: ["H2, NH3, O2, CO2", "CO2, O2, NH3, H2", "O2, CO2, H2, NH3", "NH3, H2, CO2, O2"],
+    a: 1,
+  },
+  {
+    q: "Which of the following oxoacids of chlorine is the most acidic?",
+    c: ["HOCl", "HClO2", "HClO3", "HClO4"],
+    a: 3,
+  },
+  {
+    q: "What is the steric number and molecular geometry of SO2?",
+    c: ["SN=2, Linear", "SN=3, Bent", "SN=4, Bent", "SN=3, Trigonal Planar"],
+    a: 1,
+  },
+  {
+    q: "In the reaction A + 3B -> 2C + D, if A is 1st order and B is 2nd order, doubling [A] and halving [B] causes the rate to:",
+    c: ["Increase by 2", "Decrease by 2", "Increase by 4", "Remain the same"],
+    a: 1,
+  },
+  {
+    q: "Determine the oxidation numbers of Manganese in KMnO4 and MnO2 respectively:",
+    c: ["+7, +4", "+2, +4", "+7, +2", "+5, +4"],
+    a: 0,
+  },
+  {
+    q: "Which orbital remains unhybridized in sp2 hybridization?",
+    c: ["px", "py", "pz", "s"],
+    a: 2,
+  },
+  {
+    q: "What is the hybridization of the carbon atom in CO2 (O=C=O)?",
+    c: ["sp", "sp3", "sp2", "dsp2"],
+    a: 0,
+  },
+  {
+    q: "What is the shape of the Formaldehyde (CH2O) molecule?",
+    c: ["Triangular", "Trigonal Planar", "Tetrahedral", "Bent"],
+    a: 1,
+  },
+  {
+    q: "The electrode where electrons are lost (oxidation takes place) is the:",
+    c: ["Anode (Negative)", "Cathode (Positive)", "Anode (Positive)", "Cathode (Negative)"],
+    a: 0,
+  },
+  {
+    q: "According to Hess's Law, the total enthalpy change of a reaction is:",
+    c: ["Dependent on the path taken", "Independent of the path taken", "Always zero", "Only dependent on the catalyst"],
+    a: 1,
+  },
+  {
+    q: "Which phase change is the most endothermic?",
+    c: ["Melting", "Boiling", "Condensation", "Vaporization"],
+    a: 3,
+  },
+  {
+    q: "If energy is added to a substance but the temperature remains constant, the substance is undergoing:",
+    c: ["A phase change", "Thermal expansion", "An exothermic reaction", "Ionization"],
+    a: 0,
+  }
+];
+
+
+
+
+
+
+        function shareOnWhatsApp() {
+        const message = "https://https://readoneab25.github.io/Bio-101-ecology-cell/";
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = "whatsapp://send?text=" + encodedMessage;
+        window.open(whatsappUrl, '_blank');
+    }
+    
+   
+       
+    let state = { idx:0, answers: Array(QUESTIONS.length).fill(null) };
+const total = QUESTIONS.length;
+
+function renderQuestion(){
+  const area = document.getElementById('q-area');
+  const q = QUESTIONS[state.idx];
+  document.getElementById('q-num').textContent = state.idx+1;
+  document.getElementById('q-total').textContent = total;
+  const progress = Math.round((state.idx/total)*100);
+  document.getElementById('progress-bar').style.width = progress + '%';
+
+  area.innerHTML = '';
+  const qEl = document.createElement('div');
+  qEl.innerHTML = `<div class="question">${state.idx+1}. ${q.q}</div>`;
+  const choices = document.createElement('div'); choices.className='choices';
+  q.c.forEach((choice, i)=>{
+    const btn = document.createElement('div');
+    btn.className='choice'; btn.tabIndex=0; btn.textContent = String.fromCharCode(65+i)+'. '+choice;
+    if(state.answers[state.idx]===i) btn.classList.add('selected');
+    btn.addEventListener('click', ()=>{
+      // select
+      state.answers[state.idx]=i;
+      document.querySelectorAll('.choice').forEach(el=>el.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+    choices.appendChild(btn);
+  });
+  qEl.appendChild(choices);
+  area.appendChild(qEl);
+}
+
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  if(state.idx < total-1) state.idx++;
+  renderQuestion();
+});
+
+document.getElementById('prevBtn').addEventListener('click', ()=>{
+  if(state.idx > 0) state.idx--;
+  renderQuestion();
+});
+
+document.getElementById('submitBtn').addEventListener('click', ()=>{
+  // confirm and grade
+  const unanswered = state.answers.filter(a=>a===null).length;
+  if(unanswered>0){
+    if(!confirm(`You have ${unanswered} unanswered questions. Submit anyway?`)) return;
+  }
+  gradeQuiz();
+});
+
+function gradeQuiz(){
+  let correct=0;
+  const review = [];
+  for(let i=0;i<total;i++){
+    const user = state.answers[i];
+    const correctIdx = QUESTIONS[i].a;
+    const ok = user===correctIdx;
+    if(ok) correct++;
+    review.push({i, q:QUESTIONS[i].q, choices:QUESTIONS[i].c, user, correctIdx, ok});
+  }
+  showResult(correct, review);
+}
+
+function showResult(score, review){
+  document.getElementById('quiz-card').style.display='none';
+  const area = document.getElementById('result-area');
+  area.style.display='block';
+  const title = document.getElementById('score-title');
+  title.textContent = `You scored ${score} out of ${total}`;
+  const pct = Math.round((score/total)*100);
+  document.getElementById('score-summary').textContent = `Percentage: ${pct}%`;
+
+  const list = document.getElementById('review-list'); list.innerHTML='';
+  review.forEach(item=>{
+    const div = document.createElement('div'); div.className='q-review';
+    const head = document.createElement('div'); head.style.fontWeight='700'; head.textContent = `${item.i+1}. ${item.q}`;
+    const userAns = document.createElement('div'); userAns.style.marginTop='6px';
+    const ua = item.user===null? 'No answer' : String.fromCharCode(65+item.user)+'. '+item.choices[item.user];
+    const ca = String.fromCharCode(65+item.correctIdx)+'. '+item.choices[item.correctIdx];
+    userAns.innerHTML = `<div><strong>Your answer:</strong> ${ua}</div><div style="margin-top:4px"><strong>Correct answer:</strong> ${ca}</div>`;
+    if(item.ok) userAns.style.color='lightgreen'; else userAns.style.color='#fca5a5';
+    div.appendChild(head); div.appendChild(userAns);
+    list.appendChild(div);
+  });
+}
+
+document.getElementById('retryBtn').addEventListener('click', ()=>{
+  // reset
+  state = { idx:0, answers: Array(total).fill(null) };
+  document.getElementById('result-area').style.display='none';
+  document.getElementById('quiz-card').style.display='block';
+  renderQuestion();
+});
+
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const data = {answers: state.answers, questions: QUESTIONS};
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'cos101_module1-2_results.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+
+// init
+renderQuestion();
+</script>
+
+
+</body>
+</html>
